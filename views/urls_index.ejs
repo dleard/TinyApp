@@ -7,8 +7,11 @@
 <body>
   <h2>URLS</h2>
   <ul>
+    <% const keyArray = Object.keys(urls) %>
+    <% let keyArrayIndex = 0; %>
     <% for (key in urls) { %>
-      <li><%= urls[key] %></li>
+      <li> <%= `URL: ${urls[key]}\tSHORTENED: ${keyArray[keyArrayIndex]}`%></li>
+      <% keyArrayIndex++ %>
     <% }; %>   
   </ul>
 </body>
