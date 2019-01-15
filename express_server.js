@@ -31,8 +31,17 @@ app.get('/urls:id', (req, res) => {
 });
 
 app.post('/urls', (req, res) => {
-  console.log(req.body);
-  res.send('OK!');
+  const newId = generateRandomString();
+  const {longURL} = req.body;
+  urlDatabase[newId] = longURL;
+  console.log(urlDatabase);
+  res.redirect(`http://localhost:8080/urls:${newId}`);
+});
+
+app.get('/u/:shortURL', (req, res) => {
+  const {shortURL} = (req.params);
+  const longURL = urlDatabase[shortURL];
+  res.redirect(longURL);
 });
 
 app.listen(PORT, () => {
