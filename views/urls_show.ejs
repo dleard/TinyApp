@@ -9,9 +9,11 @@
     <% include ./partials/_header %>
   </header>  
   
-  <tbody>
-      <tr> <td><%= shortURL %></td> <td><strong>&emsp; &#8680 &emsp;</strong></td> <td><a href = > <%= url %></a></td> </tr>
-  </tbody>
-  
+  <h1><%= `ShortURL:  ${shortURL}`%></h1>
+  <form action="<%= `/urls/${shortURL}` %>" method='POST'>
+      <input id='longURL' type='text' name='longURL' placeholder="<%= url %>" style='width: 300px'>
+      <input type='submit' value='Update'>
+    </form>
+
 </body>
 </html>

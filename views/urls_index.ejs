@@ -9,14 +9,35 @@
   <% include ./partials/_header %>
   </header>  
 
+  <% function msg() {
+    alert('delete button clicked');
+   } %>
+  
   <% let keyArray = Object.keys(urls) %>
   <% let keyArrayIndex = 0; %>
   <table>
         <tbody>
             <% for (key in urls) { %>
-              <tr> <td><%= keyArray[keyArrayIndex] %></td> <td><strong>&emsp; &#8680 &emsp;</strong></td> <td><a href = > <%=  urls[key] %></a></td> </tr>
-              <% keyArrayIndex++ %>
-            <% }; %>  
+              <tr> 
+                <td><%= keyArray[keyArrayIndex] %></td>
+                <td><strong>&emsp; &#8680 &emsp;</strong></td>
+                <td><a href =  "<%=  urls[key] %>"><%= urls[key] %></a> &emsp;</td>
+                <td><a href = "<%= `urls/${keyArray[keyArrayIndex]}` %>">edit</a> &emsp;</td>
+                <td>
+                  <form method="POST" action= "<%= `urls/${keyArray[keyArrayIndex]}/delete` %>">
+                    <input type="submit" value="delete">
+                  </form>
+                  <% keyArrayIndex++ %>
+                </td>  
+              <tr>
+            <% }; %>
+            <tr>
+              <td>
+                <form method="GET" action= "<%= `urls/new` %>">
+                <input type="submit" value="NEW">
+                </form>
+              </td>
+            </tr>  
         </tbody>
   </table>
 </body>

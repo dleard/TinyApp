@@ -24,24 +24,38 @@ app.get('/urls/new', (req, res) => {
   res.render('urls_new');
 });
 
-app.get('/urls:id', (req, res) => {
-  const url = urlDatabase[req.params.id.slice(1)];
-  let templateVars = { shortURL: req.params.id.slice(1), url };
+app.get('/urls/:id', (req, res) => {
+  const url = urlDatabase[req.params.id];
+  let templateVars = { shortURL: req.params.id, url };
   res.render('urls_show', templateVars);
+});
+
+app.post('/urls/:id', (req, res) => {
+  const id = req.params.id;
+
+  const newLongURL = req.body.longURL;
+  urlDatabase[id] = newLongURL;
+  res.redirect('/urls');
 });
 
 app.post('/urls', (req, res) => {
   const newId = generateRandomString();
   const {longURL} = req.body;
   urlDatabase[newId] = longURL;
-  console.log(urlDatabase);
-  res.redirect(`http://localhost:8080/urls:${newId}`);
+  res.redirect('/urls');
 });
 
 app.get('/u/:shortURL', (req, res) => {
   const {shortURL} = (req.params);
   const longURL = urlDatabase[shortURL];
   res.redirect(longURL);
+});
+
+app.post('/urls/:id/delete', (req, res) => {
+  const id = req.params.id;
+  delete urlDatabase[id];
+  res.redirect('/urls');
+
 });
 
 app.listen(PORT, () => {
@@ -62,4 +76,3 @@ const generateRandomString  = () => {
   }
   return randomString;
 }
-generateRandomString();
