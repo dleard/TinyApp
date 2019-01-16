@@ -3,7 +3,8 @@
 <h1>Tiny APP</h1>
 <% if (username !== undefined) { %>
   <form action="/logout" method="POST">
-    <input type="submit" value="Log out">    
+    <input type="submit" value="Log out">
+  </form>      
   <p><%=`Hello, ${username}!` %> </p>
 <% } %>  
 <% if(username === undefined) { %>
