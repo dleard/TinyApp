@@ -8,13 +8,16 @@
   <header>
   <% include ./partials/_header %>
   </header>  
-  <ul>
-    <% const keyArray = Object.keys(urls) %>
-    <% let keyArrayIndex = 0; %>
-    <% for (key in urls) { %>
-      <li> <%= `URL: ${urls[key]}\tSHORTENED: ${keyArray[keyArrayIndex]}`%></li>
-      <% keyArrayIndex++ %>
-    <% }; %>   
-  </ul>
+
+  <% let keyArray = Object.keys(urls) %>
+  <% let keyArrayIndex = 0; %>
+  <table>
+        <tbody>
+            <% for (key in urls) { %>
+              <tr> <td><%= keyArray[keyArrayIndex] %></td> <td><strong>&emsp; &#8680 &emsp;</strong></td> <td><a href = > <%=  urls[key] %></a></td> </tr>
+              <% keyArrayIndex++ %>
+            <% }; %>  
+        </tbody>
+  </table>
 </body>
 </html>
