@@ -1,7 +1,11 @@
 <!DOCTYPE html>
 <html lang='en'>
+
   <body style='font-size:20px; padding:50px;'>
+    <header>
     <% include partials/_header %>
+    </header>
+    
     <form action='/urls' method='POST'>
       <label for='longURL'>Enter a URL:</label>
       <input id='longURL' type='text' name='longURL' placeholder='http://' style='width: 300px'>

@@ -1,9 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const app = express();
 const PORT = 8080;
 
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(cookieParser());
 app.set('view engine', 'ejs');
 
 const urlDatabase = {
@@ -15,18 +17,25 @@ app.get('/', (req,res) => {
   res.send("Hello. You are at the root!");
 });
 
+app.post('/login', (req, res) => {
+  
+  res.cookie('username', req.body.username);
+  res.redirect('/urls');
+})
+
 app.get('/urls', (req, res) => {
-  let templateVars = { urls: urlDatabase };
+  let templateVars = { urls: urlDatabase, username: req.cookies.username};
   res.render('urls_index', templateVars);
 });
 
 app.get('/urls/new', (req, res) => {
-  res.render('urls_new');
+  let templateVars = {username: req.cookies.username}
+  res.render('urls_new', templateVars);
 });
 
 app.get('/urls/:id', (req, res) => {
   const url = urlDatabase[req.params.id];
-  let templateVars = { shortURL: req.params.id, url };
+  let templateVars = { shortURL: req.params.id, url, username: req.cookies.user };
   res.render('urls_show', templateVars);
 });
 
