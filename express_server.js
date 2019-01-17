@@ -13,7 +13,22 @@ const urlDatabase = {
   '9sm5xK': 'http://www.google.com'
 };
 
-app.get('/', (req,res) => {
+const generateRandomString  = () => {
+  let randomString = '';
+  for (let i = 0; i < 6; i++) {
+    const numbers = [];
+    
+    numbers.push(Math.floor(Math.random() * 10) + 1 + 47);
+    numbers.push(Math.floor(Math.random() * 26) + 1 + 64);
+    numbers.push(Math.floor(Math.random() * 26) + 1 + 96);
+    
+    const index = Math.floor(Math.random() * 3);
+    randomString += String.fromCharCode(numbers[index]);
+  }
+  return randomString;
+};
+
+app.get('/', (req, res) => {
   res.send("Hello. You are at the root!");
 });
 
@@ -74,18 +89,3 @@ app.post('/urls/:id/delete', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);
 });
-
-const generateRandomString  = () => {
-  let randomString = '';
-  for (let i = 0; i < 6; i++) {
-    const numbers = [];
-    
-    numbers.push(Math.floor(Math.random() * 10) + 1 + 47);
-    numbers.push(Math.floor(Math.random() * 26) + 1 + 64);
-    numbers.push(Math.floor(Math.random() * 26) + 1 + 96);
-    
-    const index = Math.floor(Math.random() * 3);
-    randomString += String.fromCharCode(numbers[index]);
-  }
-  return randomString;
-}
