@@ -9,8 +9,14 @@ app.use(cookieParser());
 app.set('view engine', 'ejs');
 
 const urlDatabase = {
-  'b2xVn2': 'http://www.lighthouselabs.ca',
-  '9sm5xK': 'http://www.google.com'
+  A10000 : {
+    'b2xVn2': 'http://www.lighthouselabs.ca',
+    '9sm5xK': 'http://www.google.com'
+  },
+  A10100 : {
+    '5dT232': 'http://www.canucks.com'
+  }
+  
 };
 
 const generateRandomString  = () => {
@@ -93,18 +99,23 @@ app.post('/logout', (req, res) => {
 
 app.get('/urls', (req, res) => {
   const id = req.cookies.user_id;
-  let templateVars = { urls: urlDatabase, user: users[id]};
+  let templateVars = { urls: {}, user: undefined};
+  
+  if (urlDatabase[id]) templateVars = { urls: urlDatabase[id], user: users[id]};
   res.render('urls_index', templateVars);
 });
 
 app.get('/urls/new', (req, res) => {
-  id = req.cookies.user_id;
+  const id = req.cookies.user_id;
+  if ( id === undefined) {
+    res.redirect('/login')
+  }
   let templateVars = { user: users[id] };
   res.render('urls_new', templateVars);
 });
 
 app.get('/urls/:id', (req, res) => {
-  const id = req.cookies.user.id;
+  const id = req.cookies.user_id;
   const url = urlDatabase[req.params.id];
   let templateVars = { shortURL: req.params.id, url, user: users[id] };
   res.render('urls_show', templateVars);
@@ -118,9 +129,10 @@ app.post('/urls/:id', (req, res) => {
 });
 
 app.post('/urls', (req, res) => {
+  const id = req.cookies.user_id;
   const newId = generateRandomString();
   const {longURL} = req.body;
-  urlDatabase[newId] = longURL;
+  urlDatabase[id][newId] = longURL;
   res.redirect('/urls');
 });
 
