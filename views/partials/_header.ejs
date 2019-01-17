@@ -8,8 +8,10 @@
     <p><%=`Hello, ${user.email}!` %> </p>
 <% } %>  
 <% if(user === undefined) { %>
-  <form action="/login" method='POST'>
-    <input name="username" placeholder="username">
+  <form action="/login" method='GET'>
     <input type="submit" value="Log in">
+  </form>
+  <form action="/register" method='GET'>
+    <input type="submit" value="Register">
   </form>
 <% } %>
