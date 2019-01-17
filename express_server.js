@@ -32,6 +32,16 @@ app.get('/', (req, res) => {
   res.send("Hello. You are at the root!");
 });
 
+app.get('/register', (req, res) => {
+  let templateVars = {username: req.cookies.username};
+  res.render('register', templateVars);
+});
+
+app.post('/register', (req, res) => {
+  console.log(req.body);
+  res.redirect('/urls');
+});
+
 app.post('/login', (req, res) => {
   
   res.cookie('username', req.body.username);
