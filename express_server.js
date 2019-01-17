@@ -48,7 +48,7 @@ const users = {
 };
 
 app.get('/', (req, res) => {
-  res.send("Hello. You are at the root!");
+  res.redirect('/urls');
 });
 
 app.get('/register', (req, res) => {
@@ -122,9 +122,10 @@ app.get('/urls/:id', (req, res) => {
 });
 
 app.post('/urls/:id', (req, res) => {
-  const id = req.params.id;
+  const id = req.cookies.user_id;
+  const shortURL = req.params.id;
   const newLongURL = req.body.longURL;
-  urlDatabase[id] = newLongURL;
+  urlDatabase[id][shortURL] = newLongURL;
   res.redirect('/urls');
 });
 
@@ -143,8 +144,9 @@ app.get('/u/:shortURL', (req, res) => {
 });
 
 app.post('/urls/:id/delete', (req, res) => {
-  const id = req.params.id;
-  delete urlDatabase[id];
+  id = req.cookies.user_id;
+  const shortURL = req.params.id;
+  delete urlDatabase[id][shortURL];
   res.redirect('/urls');
 
 });
