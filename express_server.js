@@ -28,44 +28,68 @@ const generateRandomString  = () => {
   return randomString;
 };
 
+const users = { 
+  A10000: {
+    id: 'A10000', 
+    email: 'first@gmail.com', 
+    password: 'first'
+  },
+ A10100: {
+    id: 'A10100', 
+    email: 'second@gmail.com', 
+    password: 'second'
+  }
+}
+
 app.get('/', (req, res) => {
   res.send("Hello. You are at the root!");
 });
 
 app.get('/register', (req, res) => {
-  let templateVars = {username: req.cookies.username};
+  const id = req.cookies.user_id;
+  let templateVars = {user: users[id]};
   res.render('register', templateVars);
 });
 
 app.post('/register', (req, res) => {
-  console.log(req.body);
+  const id = generateRandomString();
+  const {email, pass} = req.body;
+  users[id] = {};
+  users[id].id = id;
+  users[id].email = email;
+  users[id].password = pass;
+  
+  res.cookie('user_id', id);
   res.redirect('/urls');
 });
 
 app.post('/login', (req, res) => {
-  
-  res.cookie('username', req.body.username);
+  const id = req.body.user_id;
+  res.cookie('user_id', id);
   res.redirect('/urls');
 });
 
 app.post('/logout', (req, res) => {
-  res.clearCookie('username', req.cookies.username);
+  res.clearCookie('user_id', req.cookies.user_id);
   res.redirect('/urls');
 });
 
 app.get('/urls', (req, res) => {
-  let templateVars = { urls: urlDatabase, username: req.cookies.username};
+  const id = req.cookies.user_id;
+  let templateVars = { urls: urlDatabase, user: users[id]};
   res.render('urls_index', templateVars);
 });
 
 app.get('/urls/new', (req, res) => {
-  let templateVars = {username: req.cookies.username};
+  id = req.cookies.user_id;
+  let templateVars = { user: users[id] };
   res.render('urls_new', templateVars);
 });
 
 app.get('/urls/:id', (req, res) => {
+  const id = req.cookies.user.id;
   const url = urlDatabase[req.params.id];
-  let templateVars = { shortURL: req.params.id, url, username: req.cookies.username };
+  let templateVars = { shortURL: req.params.id, url, user: users[id] };
   res.render('urls_show', templateVars);
 });
 

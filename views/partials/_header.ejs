@@ -1,13 +1,13 @@
 <!-- views/partials/header.ejs -->
 
 <h1>Tiny APP</h1>
-<% if (username !== undefined) { %>
+<% if (user !== undefined) { %>
     <form action="/logout" method="POST">
       <input type="submit" value="Log out">
     </form>      
-    <p><%=`Hello, ${username}!` %> </p>
+    <p><%=`Hello, ${user.email}!` %> </p>
 <% } %>  
-<% if(username === undefined) { %>
+<% if(user === undefined) { %>
   <form action="/login" method='POST'>
     <input name="username" placeholder="username">
     <input type="submit" value="Log in">
