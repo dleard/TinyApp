@@ -63,8 +63,21 @@ app.post('/register', (req, res) => {
   res.redirect('/urls');
 });
 
+app.get('/login', (req, res) => {
+  const id = req.cookies.user_id;
+  let templateVars = {user: users[id]};
+  res.render('login', templateVars);
+
+});
+
 app.post('/login', (req, res) => {
-  const id = req.body.user_id;
+  const { email, pass} = req.body;
+  let id;
+  for (key in users) {
+    if (users[key].email === email && users[key].password === pass) {
+      id = users[key].id;
+    }
+  }
   res.cookie('user_id', id);
   res.redirect('/urls');
 });
