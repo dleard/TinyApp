@@ -40,6 +40,16 @@ const generateRandomString  = () => {
   return randomString;
 };
 
+const urlsForUser = (id) => {
+  userURLs = {}
+  for (key in urlDatabase) {
+    if (urlDatabase[key].user === id) {
+      userURLs[key] = urlDatabase[key];
+    };
+  };
+  return userURLs;
+};
+
 const users = {
   A10000: {
     id: 'A10000',
@@ -105,7 +115,8 @@ app.post('/logout', (req, res) => {
 
 app.get('/urls', (req, res) => {
   const id = req.cookies.user_id;
-  let templateVars = { urls: urlDatabase, user: users[id]};
+  const urls = urlsForUser(id);
+  let templateVars = { urls, user: users[id]};
   res.render('urls_index', templateVars);
 });
 

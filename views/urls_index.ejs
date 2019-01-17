@@ -13,33 +13,36 @@
   <% let keyArrayIndex = 0; %>
   <table>
         <tbody>
-            <% for (key in urls) { %>
-              <tr> 
-                <td><%= keyArray[keyArrayIndex] %></td>
-                <td><strong>&emsp; &#8680 &emsp;</strong></td>
-                <td><a href =  "<%=  urls[key] %>"><%= urls[key].long %></a> &emsp;</td>
-                <% if (user !== undefined && user.id === urls[key].user) { %>
-                <td>
-                  <form method="GET" action= "<%= `urls/${keyArray[keyArrayIndex]}` %>">
-                    <input type="submit" value="edit">
-                  </form>
-                <td>
-                  <form method="POST" action= "<%= `urls/${keyArray[keyArrayIndex]}/delete` %>">
-                    <input type="submit" value="delete">
-                  </form>
-                  
-                </td>
-                <% }; %>  
-                <% keyArrayIndex++ %>
-              <tr>
-            <% }; %>
-            <tr>
+          <% if (Object.keys(urls).length === 0) { %>
+            <tr><td>LOGIN OR REGISTER TO VIEW URLS</td></tr>
+          <% } %>  
+          <% for (key in urls) { %>
+            <tr> 
+              <td><%= keyArray[keyArrayIndex] %></td>
+              <td><strong>&emsp; &#8680 &emsp;</strong></td>
+              <td><a href =  "<%=  urls[key] %>"><%= urls[key].long %></a> &emsp;</td>
+              <% if (user !== undefined && user.id === urls[key].user) { %>
               <td>
-                <form method="GET" action= "<%= `urls/new` %>">
-                <input type="submit" value="NEW">
+                <form method="GET" action= "<%= `urls/${keyArray[keyArrayIndex]}` %>">
+                  <input type="submit" value="edit">
                 </form>
+              <td>
+                <form method="POST" action= "<%= `urls/${keyArray[keyArrayIndex]}/delete` %>">
+                  <input type="submit" value="delete">
+                </form>
+                
               </td>
-            </tr>  
+              <% }; %>  
+              <% keyArrayIndex++ %>
+            <tr>
+          <% }; %>
+          <tr>
+            <td>
+              <form method="GET" action= "<%= `urls/new` %>">
+              <input type="submit" value="NEW">
+              </form>
+            </td>
+          </tr>  
         </tbody>
   </table>
 </body>
