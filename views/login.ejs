@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <style>
+      label.register{
+        display: table-cell;
+      }
+      input.register{
+        width: 300px;
+        display: table-cell;
+      }
+    </style>
+  </header>
+  <body style='font-size:20px; padding:50px;'>
+    <header>
+      <% include partials/_header %>
+    </header>
+    <br>
+    <h3>Login</h3>
+    <form action='/login' method='POST'>
+      <label class='register' for='email'>Email:</label>
+      <input class='register' id='email' type='text' name='email' placeholder='you@example.com'>
+      <br>
+      <label class='register' for='pass'>Password:</label>
+      <input class='register' id='pass' type='text' name='pass' placeholder='password'>
+      <br>
+      <input type='submit' value='Submit'>
+    </form>
+  </body>
+</html>  
