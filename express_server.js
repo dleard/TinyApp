@@ -9,12 +9,18 @@ app.use(cookieParser());
 app.set('view engine', 'ejs');
 
 const urlDatabase = {
-  A10000 : {
-    'b2xVn2': 'http://www.lighthouselabs.ca',
-    '9sm5xK': 'http://www.google.com'
+  
+  'b2xVn2': {
+    user: 'A10000',
+    long: 'http://www.lighthouselabs.ca',
+  },  
+  '9sm5xK': {
+    'user': 'A10000',
+    long: 'http://www.google.com'
   },
-  A10100 : {
-    '5dT232': 'http://www.canucks.com'
+  '5dT232': {
+    user: 'A10100',
+    long: 'http://www.canucks.com'
   }
   
 };
@@ -99,9 +105,7 @@ app.post('/logout', (req, res) => {
 
 app.get('/urls', (req, res) => {
   const id = req.cookies.user_id;
-  let templateVars = { urls: {}, user: undefined};
-  
-  if (urlDatabase[id]) templateVars = { urls: urlDatabase[id], user: users[id]};
+  let templateVars = { urls: urlDatabase, user: users[id]};
   res.render('urls_index', templateVars);
 });
 
@@ -125,7 +129,9 @@ app.post('/urls/:id', (req, res) => {
   const id = req.cookies.user_id;
   const shortURL = req.params.id;
   const newLongURL = req.body.longURL;
-  urlDatabase[id][shortURL] = newLongURL;
+  if (urlDatabase[shortURL].user === id) {
+    urlDatabase[id][shortURL] = newLongURL;
+  };
   res.redirect('/urls');
 });
 
@@ -146,7 +152,9 @@ app.get('/u/:shortURL', (req, res) => {
 app.post('/urls/:id/delete', (req, res) => {
   id = req.cookies.user_id;
   const shortURL = req.params.id;
-  delete urlDatabase[id][shortURL];
+  if (urlDatabase[shortURL].user === id) {
+    delete urlDatabase[shortURL];
+  };
   res.redirect('/urls');
 
 });
