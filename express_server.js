@@ -1,12 +1,17 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
+const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
 const app = express();
 const PORT = 8080;
 
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(cookieParser());
+app.use(cookieSession({
+  name: 'session',
+  keys:['Wubba lubba dub dub'],
+
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}));
 app.set('view engine', 'ejs');
 
 const urlDatabase = {
@@ -75,7 +80,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/register', (req, res) => {
-  const id = req.cookies.user_id;
+  const id = req.session.user_Id;
   let templateVars = {user: users[id]};
   res.render('register', templateVars);
 });
@@ -88,12 +93,12 @@ app.post('/register', (req, res) => {
   users[id].email = email;
   users[id].password = bcrypt.hashSync(pass, 10);
   
-  res.cookie('user_id', id);
+  req.session.user_Id = id;
   res.redirect('/urls');
 });
 
 app.get('/login', (req, res) => {
-  const id = req.cookies.user_id;
+  const id = req.session.user_Id;
   let templateVars = {user: users[id]};
   res.render('login', templateVars);
 
@@ -111,24 +116,25 @@ app.post('/login', (req, res) => {
     res.status(403);
     res.send('Invalid Login');
   }
-  res.cookie('user_id', id);
+  req.session.user_Id = id;
   res.redirect('/urls');
 });
 
 app.post('/logout', (req, res) => {
-  res.clearCookie('user_id', req.cookies.user_id);
+  res.clearCookie('user_Id', req.session.user_Id);
   res.redirect('/urls');
 });
 
 app.get('/urls', (req, res) => {
-  const id = req.cookies.user_id;
+  const id = req.session.user_Id;
   const urls = urlsForUser(id);
   let templateVars = { urls, user: users[id]};
+  console.log(req.session.user_Id);
   res.render('urls_index', templateVars);
 });
 
 app.get('/urls/new', (req, res) => {
-  const id = req.cookies.user_id;
+  const id = req.session.user_Id;
   if ( id === undefined) {
     res.redirect('/login')
   }
@@ -138,14 +144,14 @@ app.get('/urls/new', (req, res) => {
 
 app.get('/urls/:id', (req, res) => {
   let {id} = req.params
-  const userId = req.cookies.user_id;
+  const userId = req.session.user_Id;
   const url = urlDatabase[id].long;
   let templateVars = { shortURL: req.params.id, url, user: users[userId] };
   res.render('urls_show', templateVars);
 });
 
 app.post('/urls/:id', (req, res) => {
-  const id = req.cookies.user_id;
+  const id = req.session.user_Id;
   const shortURL = req.params.id;
   const newLongURL = req.body.longURL;
   if (urlDatabase[shortURL].user === id) {
@@ -155,10 +161,13 @@ app.post('/urls/:id', (req, res) => {
 });
 
 app.post('/urls', (req, res) => {
-  const id = req.cookies.user_id;
+  const id = req.session.user_Id;
   const newId = generateRandomString();
   const {longURL} = req.body;
-  urlDatabase[id][newId] = longURL;
+  urlDatabase[newId] = {
+    user: id,
+    long: longURL,
+  }  
   res.redirect('/urls');
 });
 
@@ -169,7 +178,7 @@ app.get('/u/:shortURL', (req, res) => {
 });
 
 app.post('/urls/:id/delete', (req, res) => {
-  id = req.cookies.user_id;
+  id = req.session.user_Id;
   const shortURL = req.params.id;
   if (urlDatabase[shortURL].user === id) {
     delete urlDatabase[shortURL];
