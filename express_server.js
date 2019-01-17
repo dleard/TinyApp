@@ -130,7 +130,7 @@ app.post('/urls/:id', (req, res) => {
   const shortURL = req.params.id;
   const newLongURL = req.body.longURL;
   if (urlDatabase[shortURL].user === id) {
-    urlDatabase[id][shortURL] = newLongURL;
+    urlDatabase[shortURL].long = newLongURL;
   };
   res.redirect('/urls');
 });
