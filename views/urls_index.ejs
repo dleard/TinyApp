@@ -18,8 +18,11 @@
                 <td><%= keyArray[keyArrayIndex] %></td>
                 <td><strong>&emsp; &#8680 &emsp;</strong></td>
                 <td><a href =  "<%=  urls[key] %>"><%= urls[key].long %></a> &emsp;</td>
-                <% if (user.id === urls[key].user) { %>
-                <td><a href = "<%= `urls/${keyArray[keyArrayIndex].longURL}` %>">edit</a> &emsp;</td>
+                <% if (user !== undefined && user.id === urls[key].user) { %>
+                <td>
+                  <form method="GET" action= "<%= `urls/${keyArray[keyArrayIndex]}` %>">
+                    <input type="submit" value="edit">
+                  </form>
                 <td>
                   <form method="POST" action= "<%= `urls/${keyArray[keyArrayIndex]}/delete` %>">
                     <input type="submit" value="delete">
