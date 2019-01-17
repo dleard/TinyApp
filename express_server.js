@@ -157,7 +157,7 @@ app.post('/urls', (req, res) => {
 
 app.get('/u/:shortURL', (req, res) => {
   const {shortURL} = (req.params);
-  const longURL = urlDatabase[shortURL];
+  const longURL = urlDatabase[shortURL].long;
   res.redirect(longURL);
 });
 
