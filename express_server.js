@@ -28,18 +28,18 @@ const generateRandomString  = () => {
   return randomString;
 };
 
-const users = { 
+const users = {
   A10000: {
-    id: 'A10000', 
-    email: 'first@gmail.com', 
+    id: 'A10000',
+    email: 'first@gmail.com',
     password: 'first'
   },
- A10100: {
-    id: 'A10100', 
-    email: 'second@gmail.com', 
+  A10100: {
+    id: 'A10100',
+    email: 'second@gmail.com',
     password: 'second'
   }
-}
+};
 
 app.get('/', (req, res) => {
   res.send("Hello. You are at the root!");
@@ -77,6 +77,10 @@ app.post('/login', (req, res) => {
     if (users[key].email === email && users[key].password === pass) {
       id = users[key].id;
     }
+  }
+  if (id === undefined) {
+    res.status(403);
+    res.send('Invalid Login');
   }
   res.cookie('user_id', id);
   res.redirect('/urls');
