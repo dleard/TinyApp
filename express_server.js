@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const bcrypt = require('bcrypt');
 const app = express();
 const PORT = 8080;
 
@@ -50,18 +51,24 @@ const urlsForUser = (id) => {
   return userURLs;
 };
 
+const firstPass = bcrypt.hashSync('first', 10);
+const secondPass = bcrypt.hashSync('second', 10);
+
 const users = {
   A10000: {
     id: 'A10000',
     email: 'first@gmail.com',
-    password: 'first'
+    password: ''
   },
   A10100: {
     id: 'A10100',
     email: 'second@gmail.com',
-    password: 'second'
+    password: ''
   }
 };
+
+users.A10000.password = firstPass;
+users.A10100.password = secondPass;
 
 app.get('/', (req, res) => {
   res.redirect('/urls');
@@ -79,7 +86,7 @@ app.post('/register', (req, res) => {
   users[id] = {};
   users[id].id = id;
   users[id].email = email;
-  users[id].password = pass;
+  users[id].password = bcrypt.hashSync(pass, 10);
   
   res.cookie('user_id', id);
   res.redirect('/urls');
@@ -96,7 +103,7 @@ app.post('/login', (req, res) => {
   const { email, pass} = req.body;
   let id;
   for (key in users) {
-    if (users[key].email === email && users[key].password === pass) {
+    if (users[key].email === email && bcrypt.compareSync(pass, users[key].password)) {
       id = users[key].id;
     }
   }
