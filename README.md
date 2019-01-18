@@ -22,7 +22,7 @@ TinyApp is a full stack web application built with Node and Express that allows 
 ## Dummy variables
 
 This app comes with some dummy values entered into the URLs database and some dummy users.
-and 2 dummy users:
+and 2 dummy users:<br/>
 
 User 1:
 - email: first@gmail.com
