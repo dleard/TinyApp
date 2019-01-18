@@ -13,7 +13,7 @@
   <% let keyArrayIndex = 0; %>
   <table>
         <tbody>
-          <% if (Object.keys(urls).length === 0) { %>
+          <% if (user === undefined) { %>
             <tr><td>LOGIN OR REGISTER TO VIEW URLS</td></tr>
           <% } %>  
           <% for (key in urls) { %>

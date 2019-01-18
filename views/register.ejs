@@ -26,5 +26,8 @@
       <br>
       <input type='submit' value='Submit'>
     </form>
+    <% if (duplicateUserError !== undefined) { %>
+      <p style = "color:red;"><%= duplicateUserError %></p>
+    <% } %>
   </body>
-</html>  
+</html>

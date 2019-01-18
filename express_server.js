@@ -97,20 +97,33 @@ app.get('/', (req, res) => {
 
 app.get('/register', (req, res) => {
   const id = req.session.user_Id;
-  let templateVars = {user: users[id]};
+  let templateVars = {user: users[id], duplicateUserError: req.duplicateUserError};
   res.render('register', templateVars);
 });
 
 app.post('/register', (req, res) => {
   const id = generateRandomString();
   const {email, pass} = req.body;
-  users[id] = {};
-  users[id].id = id;
-  users[id].email = email;
-  users[id].password = bcrypt.hashSync(pass, 10);
-  
-  req.session.user_Id = id;
-  res.redirect('/urls');
+  let existsFlag = 0;
+  for (key in users) {
+    if (users[key].email === email) {
+      existsFlag = 1;
+    } 
+  }
+  if (existsFlag) {
+    req.duplicateUserError = 'user email already exists';
+    let templateVars = {user: users[id], duplicateUserError: req.duplicateUserError};
+    res.render('register', templateVars);
+  } else {
+    req.duplicateUserError = undefined;
+    users[id] = {};
+    users[id].id = id;
+    users[id].email = email;
+    users[id].password = bcrypt.hashSync(pass, 10);
+    
+    req.session.user_Id = id;
+    res.redirect('/urls');
+  }  
 });
 
 app.get('/login', (req, res) => {
