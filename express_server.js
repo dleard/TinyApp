@@ -8,9 +8,9 @@ const PORT = 8080;
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieSession({
   name: 'session',
-  keys:['Wubba lubba dub dub'],
+  keys: ['Wubba lubba dub dub'],
 
-  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  maxAge: 24 * 60 * 60 * 1000
 }));
 app.set('view engine', 'ejs');
 
@@ -18,8 +18,8 @@ const urlDatabase = {
   
   'b2xVn2': {
     user: 'A10000',
-    long: 'http://www.lighthouselabs.ca',
-  },  
+    long: 'http://www.lighthouselabs.ca'
+  },
   '9sm5xK': {
     'user': 'A10000',
     long: 'http://www.google.com'
@@ -47,19 +47,19 @@ const generateRandomString  = () => {
 };
 
 const urlsForUser = (id) => {
-  userURLs = {}
+  userURLs = {};
   for (key in urlDatabase) {
     if (urlDatabase[key].user === id) {
       userURLs[key] = urlDatabase[key];
-    };
-  };
+    }
+  }
   return userURLs;
 };
 
 const linkChecker = (link) => {
   const httpRegex = /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/;
   if (!httpRegex.test(link)) {
-    return false
+    return false;
   }
   return true;
 };
@@ -70,7 +70,7 @@ const validateEmail = (email) => {
     return false;
   }
   return true;
-}
+};
 
 const firstPass = bcrypt.hashSync('first', 10);
 const secondPass = bcrypt.hashSync('second', 10);
@@ -108,7 +108,7 @@ app.post('/register', (req, res) => {
   for (key in users) {
     if (users[key].email === email) {
       existsFlag = 1;
-    } 
+    }
   }
   if (existsFlag) {
     req.duplicateUserError = 'user email already exists';
@@ -123,7 +123,7 @@ app.post('/register', (req, res) => {
     
     req.session.user_Id = id;
     res.redirect('/urls');
-  }  
+  }
 });
 
 app.get('/login', (req, res) => {
@@ -138,9 +138,9 @@ app.post('/login', (req, res) => {
   let id;
   
   if (!validateEmail(email)) {
-      req.emailError = 'invalid email format';
-      templateVars = {user: users[id], emailError: req.emailError};
-      res.render('login', templateVars)
+    req.emailError = 'invalid email format';
+    templateVars = {user: users[id], emailError: req.emailError};
+    res.render('login', templateVars);
   } else {
 
     for (key in users) {
@@ -174,15 +174,15 @@ app.get('/urls/new', (req, res) => {
   const id = req.session.user_Id;
   const linkError = req.linkError;
   if ( id === undefined) {
-    res.redirect('/login')
+    res.redirect('/login');
   }
   let templateVars = { user: users[id], linkError };
   res.render('urls_new', templateVars);
 });
 
 app.get('/urls/:id', (req, res) => {
-  let {id} = req.params
-  const linkError = req.linkError
+  let {id} = req.params;
+  const linkError = req.linkError;
   const userId = req.session.user_Id;
   const url = urlDatabase[id].long;
   let templateVars = { shortURL: req.params.id, url, user: users[userId], linkError };
@@ -194,17 +194,21 @@ app.post('/urls/:id', (req, res) => {
   const shortURL = req.params.id;
   const newLongURL = req.body.longURL;
   const url = urlDatabase[shortURL].long;
-  if (!linkChecker(newLongURL)) {
-    req.linkError = 'invalid link did you forget http:// ?';
-    templateVars = {shortURL, user: users[id], url, linkError: req.linkError};
-    res.render('urls_show', templateVars)
+  if(!id) {
+    res.status(403).send('Unauthorized');
   } else {
-    req.linkError = undefined;
-  
-    if (urlDatabase[shortURL].user === id) {
-      urlDatabase[shortURL].long = newLongURL;
-    };
-    res.redirect('/urls');
+    if (!linkChecker(newLongURL)) {
+      req.linkError = 'invalid link did you forget http:// ?';
+      templateVars = {shortURL, user: users[id], url, linkError: req.linkError};
+      res.render('urls_show', templateVars);
+    } else {
+      req.linkError = undefined;
+    
+      if (urlDatabase[shortURL].user === id) {
+        urlDatabase[shortURL].long = newLongURL;
+      }
+      res.redirect('/urls');
+    }
   }
 });
 
@@ -212,18 +216,22 @@ app.post('/urls', (req, res) => {
   const id = req.session.user_Id;
   const newId = generateRandomString();
   const {longURL} = req.body;
-  if (!linkChecker(longURL)) {
-    req.linkError = 'invalid link did you forget http:// ?';
-    templateVars = {user: users[id], linkError: req.linkError};
-    res.render('urls_new', templateVars)
-  } else {
-    req.linkError = undefined;
-  
-    urlDatabase[newId] = {
-      user: id,
-      long: longURL,
-    }  
-    res.redirect('/urls');
+  if(!id) {
+    res.status(403).send('Unauthorized');
+  }else {
+    if (!linkChecker(longURL)) {
+      req.linkError = 'invalid link did you forget http:// ?';
+      templateVars = {user: users[id], linkError: req.linkError};
+      res.render('urls_new', templateVars);
+    } else {
+      req.linkError = undefined;
+    
+      urlDatabase[newId] = {
+        user: id,
+        long: longURL
+      };
+      res.redirect('/urls');
+    }
   }
 });
 
@@ -236,11 +244,14 @@ app.get('/u/:shortURL', (req, res) => {
 app.post('/urls/:id/delete', (req, res) => {
   id = req.session.user_Id;
   const shortURL = req.params.id;
-  if (urlDatabase[shortURL].user === id) {
-    delete urlDatabase[shortURL];
-  };
-  res.redirect('/urls');
-
+  if(!id) {
+    res.status(403).send('Unauthorized');
+  } else {
+    if (urlDatabase[shortURL].user === id) {
+      delete urlDatabase[shortURL];
+    }
+    res.redirect('/urls');
+  }
 });
 
 app.listen(PORT, () => {
