@@ -18,15 +18,18 @@ const urlDatabase = {
   
   'b2xVn2': {
     user: 'A10000',
-    long: 'http://www.lighthouselabs.ca'
+    long: 'http://www.lighthouselabs.ca',
+    dateCreated: '12 January 2018'
   },
   '9sm5xK': {
-    'user': 'A10000',
-    long: 'http://www.google.com'
+    user: 'A10000',
+    long: 'http://www.google.com',
+    dateCreated: '31 December 2012'
   },
   '5dT232': {
     user: 'A10100',
-    long: 'http://www.canucks.com'
+    long: 'http://www.canucks.com',
+    dateCreated: '15 June 2015'
   }
   
 };
@@ -90,6 +93,8 @@ const users = {
 
 users.A10000.password = firstPass;
 users.A10100.password = secondPass;
+
+const months = ['January', 'February', 'March', 'Aprrl', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 app.get('/', (req, res) => {
   res.redirect('/urls');
@@ -225,10 +230,15 @@ app.post('/urls', (req, res) => {
       res.render('urls_new', templateVars);
     } else {
       req.linkError = undefined;
-    
+      const date = JSON.stringify(new Date());
+      const year = date.slice(1,5);
+      const month = Number(date.slice(6,8));
+      const day = date.slice(9, 11);
+      const parsedDate = `${day} ${months[month]} ${year}`;
       urlDatabase[newId] = {
         user: id,
-        long: longURL
+        long: longURL,
+        dateCreated: parsedDate
       };
       res.redirect('/urls');
     }
