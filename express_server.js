@@ -23,19 +23,26 @@ const urlDatabase = {
     user: 'A10000',
     long: 'http://www.lighthouselabs.ca',
     dateCreated: '12 January 2018',
-    numClicks: 125
+    numClicks: 4,
+    uniqueClicks: 2,
+    visits: [{uniqueID: 'B10000', timestamp: 'January 15 2018'}, {uniqueID: 'B10000', timestamp: 'January 23 2018'}, 
+    {uniqueID: 'D11111', timestamp: 'June 1 2018'}, {uniqueID: 'D11111', timestamp: 'July 5 2018'}]
   },
   '9sm5xK': {
     user: 'A10000',
     long: 'http://www.google.com',
     dateCreated: '31 December 2012',
-    numClicks: 1000
+    numClicks: 3,
+    uniqueClicks: 2,
+    visits: [{uniqueID: 'B10000', timestamp: 'September 25 2013'}, {uniqueID: 'C22222', timestamp: 'January 23 2018'}]
   },
   '5dT232': {
     user: 'A10100',
     long: 'http://www.canucks.com',
     dateCreated: '15 June 2015',
-    numClicks: 50
+    numClicks: 1,
+    uniqueClicks: 1,
+    visits: [{uniqueID: 'TXx777', timestamp: 'June 25 2015'}]
   }
   
 };
@@ -83,6 +90,15 @@ const validateEmail = (email) => {
   }
   return true;
 };
+
+//get date and parse to readable format
+const getDate = () => {
+  const date = JSON.stringify(new Date());
+  const year = date.slice(1, 5);
+  const month = Number(date.slice(6, 8));
+  const day = date.slice(9, 11);
+  return `${day} ${months[month]} ${year}`;
+}
 
 //passwords for hardcoded dummy users
 const firstPass = bcrypt.hashSync('first', 10);
@@ -257,12 +273,7 @@ app.post('/urls', (req, res) => {
       res.render('urls_new', templateVars);
     } else {
       req.linkError = undefined;
-      //get date and parse to readable format
-      const date = JSON.stringify(new Date());
-      const year = date.slice(1, 5);
-      const month = Number(date.slice(6, 8));
-      const day = date.slice(9, 11);
-      const parsedDate = `${day} ${months[month]} ${year}`;
+      parsedDate = getDate();
       urlDatabase[newId] = {
         user: id,
         long: longURL,
@@ -277,6 +288,14 @@ app.post('/urls', (req, res) => {
 app.get('/u/:shortURL', (req, res) => {
   const {shortURL} = (req.params);
   const longURL = urlDatabase[shortURL].long;
+  
+  if (req.session.uniqueID === undefined) {
+    const uniqueID = generateRandomString();
+    req.session.uniqueID = uniqueID;
+    urlDatabase[shortURL].uniqueClicks++
+  }
+  const timestamp = getDate();
+  urlDatabase[shortURL].visits.push({uniqueID: req.session.uniqueID, timestamp})
   urlDatabase[shortURL].numClicks++;
   res.redirect(longURL);
 });

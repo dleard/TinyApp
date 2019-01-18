@@ -23,6 +23,7 @@
               <td><a href =  "<%=  urls[key] %>"><%= urls[key].long %></a> &emsp;</td>
               <td><%= `Created: ${urls[key].dateCreated} ` %>&emsp;</td>
               <td><%= `Visited: ${urls[key].numClicks} times` %>&emsp;</td>
+              <td><%= `Unique Visits: ${urls[key].uniqueClicks}` %>&emsp;</td>
               <% if (user !== undefined && user.id === urls[key].user) { %>
               <td>
                 <form method="GET" action= "<%= `urls/${keyArray[keyArrayIndex]}` %>">
@@ -36,7 +37,13 @@
               </td>
               <% }; %>  
               <% keyArrayIndex++ %>
-            <tr>
+            <% for(let i = 0; i < urls[key].visits.length; i++) { %>
+              <tr>
+                <td>&emsp; <%= urls[key].visits[i].uniqueID %>&emsp;
+                <td>visited on:&emsp;</td>
+                <td><%= urls[key].visits[i].timestamp %> </td>
+              </tr>
+            <% } %>
           <% }; %>
           <tr>
             <td>
