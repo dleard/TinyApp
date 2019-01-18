@@ -22,6 +22,7 @@
               <td><strong>&emsp; &#8680 &emsp;</strong></td>
               <td><a href =  "<%=  urls[key] %>"><%= urls[key].long %></a> &emsp;</td>
               <td><%= `Created: ${urls[key].dateCreated} ` %>&emsp;</td>
+              <td><%= `Visited: ${urls[key].numClicks} times` %>&emsp;</td>
               <% if (user !== undefined && user.id === urls[key].user) { %>
               <td>
                 <form method="GET" action= "<%= `urls/${keyArray[keyArrayIndex]}` %>">

@@ -20,17 +20,20 @@ const urlDatabase = {
   'b2xVn2': {
     user: 'A10000',
     long: 'http://www.lighthouselabs.ca',
-    dateCreated: '12 January 2018'
+    dateCreated: '12 January 2018',
+    numClicks: 125
   },
   '9sm5xK': {
     user: 'A10000',
     long: 'http://www.google.com',
-    dateCreated: '31 December 2012'
+    dateCreated: '31 December 2012',
+    numClicks: 1000
   },
   '5dT232': {
     user: 'A10100',
     long: 'http://www.canucks.com',
-    dateCreated: '15 June 2015'
+    dateCreated: '15 June 2015',
+    numClicks: 50
   }
   
 };
@@ -261,7 +264,8 @@ app.post('/urls', (req, res) => {
       urlDatabase[newId] = {
         user: id,
         long: longURL,
-        dateCreated: parsedDate
+        dateCreated: parsedDate,
+        numClicks: 0
       };
       res.redirect('/urls');
     }
@@ -271,6 +275,7 @@ app.post('/urls', (req, res) => {
 app.get('/u/:shortURL', (req, res) => {
   const {shortURL} = (req.params);
   const longURL = urlDatabase[shortURL].long;
+  urlDatabase[shortURL].numClicks++;
   res.redirect(longURL);
 });
 
