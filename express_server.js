@@ -22,26 +22,29 @@ const urlDatabase = {
   'b2xVn2': {
     user: 'A10000',
     long: 'http://www.lighthouselabs.ca',
-    dateCreated: '12 January 2018',
+    dateCreated: 'January 12 2018',
     numClicks: 4,
     uniqueClicks: 2,
+    uniqueUsers: ['B10000', 'D1111'],
     visits: [{uniqueID: 'B10000', timestamp: 'January 15 2018'}, {uniqueID: 'B10000', timestamp: 'January 23 2018'}, 
     {uniqueID: 'D11111', timestamp: 'June 1 2018'}, {uniqueID: 'D11111', timestamp: 'July 5 2018'}]
   },
   '9sm5xK': {
     user: 'A10000',
     long: 'http://www.google.com',
-    dateCreated: '31 December 2012',
+    dateCreated: 'December 31 2012',
     numClicks: 3,
     uniqueClicks: 2,
+    uniqueUsers: ['B10000', 'C22222'],
     visits: [{uniqueID: 'B10000', timestamp: 'September 25 2013'}, {uniqueID: 'C22222', timestamp: 'January 23 2018'}]
   },
   '5dT232': {
     user: 'A10100',
     long: 'http://www.canucks.com',
-    dateCreated: '15 June 2015',
+    dateCreated: 'June 15 2015',
     numClicks: 1,
     uniqueClicks: 1,
+    uniqueUsers: ['TXx777'],
     visits: [{uniqueID: 'TXx777', timestamp: 'June 25 2015'}]
   }
   
@@ -97,7 +100,7 @@ const getDate = () => {
   const year = date.slice(1, 5);
   const month = Number(date.slice(6, 8));
   const day = date.slice(9, 11);
-  return `${day} ${months[month]} ${year}`;
+  return `${months[month]} ${day} ${year}`;
 }
 
 //passwords for hardcoded dummy users
@@ -229,28 +232,28 @@ app.get('/urls/:id', (req, res) => {
   const linkError = req.linkError;
   const userId = req.session.user_Id;
   const url = urlDatabase[id].long;
-  let templateVars = { shortURL: req.params.id, url, user: users[userId], linkError };
+  let templateVars = { shortURL: req.params.id, url, user: users[userId], visits: urlDatabase[req.params.id].visits, linkError };
   res.render('urls_show', templateVars);
 });
 
 app.put('/urls/:id', (req, res) => {
-  const id = req.session.user_Id;
+  const userId = req.session.user_Id;
   const shortURL = req.params.id;
   const newLongURL = req.body.longURL;
   const url = urlDatabase[shortURL].long;
   // send unauthorized status if page accessed without login
-  if(!id) {
+  if(!userId) {
     res.status(403).send('Unauthorized');
   } else {
     // send user back to edit page with error message if url is invalid format
     if (!linkChecker(newLongURL)) {
       req.linkError = 'invalid link did you forget http:// ?';
-      templateVars = {shortURL, user: users[id], url, linkError: req.linkError};
+      templateVars = {shortURL, user: users[userId], url, visits: urlDatabase[shortURL].visits, linkError: req.linkError};
       res.render('urls_show', templateVars);
     } else {
       req.linkError = undefined;
     
-      if (urlDatabase[shortURL].user === id) {
+      if (urlDatabase[shortURL].user === userId) {
         urlDatabase[shortURL].long = newLongURL;
       }
       res.redirect('/urls');
@@ -280,6 +283,7 @@ app.post('/urls', (req, res) => {
         dateCreated: parsedDate,
         numClicks: 0,
         uniqueClicks: 0,
+        uniqueUsers: [],
         visits: []
       };
       res.redirect('/urls');
@@ -288,16 +292,20 @@ app.post('/urls', (req, res) => {
 });
 
 app.get('/u/:shortURL', (req, res) => {
-  const {shortURL} = (req.params);
+  const {shortURL} = req.params;
   const longURL = urlDatabase[shortURL].long;
-  
+  const uniqueID = generateRandomString();
   if (req.session.uniqueID === undefined) {
-    const uniqueID = generateRandomString();
     req.session.uniqueID = uniqueID;
+    urlDatabase[shortURL].uniqueUsers.push(req.session.uniqueID);
     urlDatabase[shortURL].uniqueClicks++
+  } 
+  else if (!urlDatabase[shortURL].uniqueUsers.includes(req.session.uniqueID)) {
+    urlDatabase[shortURL].uniqueClicks++;
+    urlDatabase[shortURL].uniqueUsers.push(req.session.uniqueID);
   }
   const timestamp = getDate();
-  urlDatabase[shortURL].visits.push({uniqueID: req.session.uniqueID, timestamp})
+  urlDatabase[shortURL].visits.push({uniqueID: req.session.uniqueID, timestamp})  
   urlDatabase[shortURL].numClicks++;
   res.redirect(longURL);
 });

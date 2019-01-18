@@ -14,6 +14,18 @@
     <input id='longURL' type='text' name='longURL' placeholder="<%= url %>" style='width: 300px'>
     <input type='submit' value='Update'>
   </form>
+  <p>-----------------</p>
+  <table>
+    <tbody>
+      <% for(let i = 0; i < visits.length; i++) { %>
+        <tr>
+          <td>&emsp; <%= visits[i].uniqueID %>&emsp;
+          <td>visited on:&emsp;</td>
+          <td><%= visits[i].timestamp %> </td>
+        </tr>
+      <% } %>
+    </tbody>
+  </table>    
   <% if (linkError !== undefined) { %>
       <p style = "color:red;"><%= linkError %></p>
   <% } %>
