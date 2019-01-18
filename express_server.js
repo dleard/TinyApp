@@ -56,6 +56,14 @@ const urlsForUser = (id) => {
   return userURLs;
 };
 
+const linkChecker = (link) => {
+  const httpRegex = /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/;
+  if (!httpRegex.test(link)) {
+    return false
+  }
+  return true;
+};
+
 const firstPass = bcrypt.hashSync('first', 10);
 const secondPass = bcrypt.hashSync('second', 10);
 
@@ -126,19 +134,20 @@ app.post('/logout', (req, res) => {
 });
 
 app.get('/urls', (req, res) => {
+  req.linkError = undefined;
   const id = req.session.user_Id;
   const urls = urlsForUser(id);
   let templateVars = { urls, user: users[id]};
-  console.log(req.session.user_Id);
   res.render('urls_index', templateVars);
 });
 
 app.get('/urls/new', (req, res) => {
   const id = req.session.user_Id;
+  const linkError = req.session.linkError;
   if ( id === undefined) {
     res.redirect('/login')
   }
-  let templateVars = { user: users[id] };
+  let templateVars = { user: users[id], linkError };
   res.render('urls_new', templateVars);
 });
 
@@ -164,6 +173,13 @@ app.post('/urls', (req, res) => {
   const id = req.session.user_Id;
   const newId = generateRandomString();
   const {longURL} = req.body;
+  if (!linkChecker(longURL)) {
+    req.linkError = 'invalid link did you forget http:// ?';
+    templateVars = {user: users[id], linkError: req.linkError};
+    res.render('urls_new', templateVars)
+  } else {
+    req.linkError = undefined;
+  }
   urlDatabase[newId] = {
     user: id,
     long: longURL,
