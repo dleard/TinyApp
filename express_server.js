@@ -14,6 +14,7 @@ app.use(cookieSession({
 }));
 app.set('view engine', 'ejs');
 
+//hardcoded dummy database
 const urlDatabase = {
   
   'b2xVn2': {
@@ -33,7 +34,7 @@ const urlDatabase = {
   }
   
 };
-
+//generate strings for ID's
 const generateRandomString  = () => {
   let randomString = '';
   for (let i = 0; i < 6; i++) {
@@ -49,6 +50,7 @@ const generateRandomString  = () => {
   return randomString;
 };
 
+//get all URLS attributed to a single user
 const urlsForUser = (id) => {
   userURLs = {};
   for (key in urlDatabase) {
@@ -59,6 +61,7 @@ const urlsForUser = (id) => {
   return userURLs;
 };
 
+//validate html format for long URLs
 const linkChecker = (link) => {
   const httpRegex = /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/;
   if (!httpRegex.test(link)) {
@@ -67,6 +70,7 @@ const linkChecker = (link) => {
   return true;
 };
 
+//validate email format for login / registration
 const validateEmail = (email) => {
   const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   if(!emailRegex.test(email)) {
@@ -75,9 +79,11 @@ const validateEmail = (email) => {
   return true;
 };
 
+//passwords for hardcoded dummy users
 const firstPass = bcrypt.hashSync('first', 10);
 const secondPass = bcrypt.hashSync('second', 10);
 
+//hardcoded dummy users
 const users = {
   A10000: {
     id: 'A10000',
@@ -91,9 +97,11 @@ const users = {
   }
 };
 
+//set passwords for dummy users
 users.A10000.password = firstPass;
 users.A10100.password = secondPass;
 
+//months array for dateCreated property of shortened link
 const months = ['January', 'February', 'March', 'Aprrl', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 app.get('/', (req, res) => {
@@ -109,17 +117,21 @@ app.get('/register', (req, res) => {
 app.post('/register', (req, res) => {
   const id = generateRandomString();
   const {email, pass} = req.body;
+  //flag set to false for if a user email already exists in the db
   let existsFlag = 0;
   for (key in users) {
     if (users[key].email === email) {
+      //set flag to true if email is found
       existsFlag = 1;
     }
   }
+  //send user back to registration page with error message if email is invalid format
   if (!validateEmail(email)) {
     req.registerError = 'invalid email format';
     templateVars = {user: users[id], registerError: req.registerError};
     res.render('register', templateVars);
   } else {
+    //send user back to registration page with error message if user email already exists
     if (existsFlag) {
       req.registerError = 'user email already exists';
       let templateVars = {user: users[id], registerError: req.registerError};
@@ -147,7 +159,7 @@ app.get('/login', (req, res) => {
 app.post('/login', (req, res) => {
   const { email, pass} = req.body;
   let id;
-  
+  //send user back to login page with error message if email is invalid format
   if (!validateEmail(email)) {
     req.emailError = 'invalid email format';
     templateVars = {user: users[id], emailError: req.emailError};
@@ -205,9 +217,11 @@ app.post('/urls/:id', (req, res) => {
   const shortURL = req.params.id;
   const newLongURL = req.body.longURL;
   const url = urlDatabase[shortURL].long;
+  // send unauthorized status if page accessed without login
   if(!id) {
     res.status(403).send('Unauthorized');
   } else {
+    // send user back to edit page with error message if url is invalid format
     if (!linkChecker(newLongURL)) {
       req.linkError = 'invalid link did you forget http:// ?';
       templateVars = {shortURL, user: users[id], url, linkError: req.linkError};
@@ -227,15 +241,18 @@ app.post('/urls', (req, res) => {
   const id = req.session.user_Id;
   const newId = generateRandomString();
   const {longURL} = req.body;
+  // send unauthorized status if page accessed without login
   if(!id) {
     res.status(403).send('Unauthorized');
   }else {
+    // send user back to new url page with error message if link invalid format
     if (!linkChecker(longURL)) {
       req.linkError = 'invalid link did you forget http:// ?';
       templateVars = {user: users[id], linkError: req.linkError};
       res.render('urls_new', templateVars);
     } else {
       req.linkError = undefined;
+      //get date and parse to readable format
       const date = JSON.stringify(new Date());
       const year = date.slice(1, 5);
       const month = Number(date.slice(6, 8));
@@ -260,6 +277,7 @@ app.get('/u/:shortURL', (req, res) => {
 app.post('/urls/:id/delete', (req, res) => {
   id = req.session.user_Id;
   const shortURL = req.params.id;
+  // send unauthorized status if page accessed without login
   if(!id) {
     res.status(403).send('Unauthorized');
   } else {
