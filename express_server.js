@@ -231,8 +231,8 @@ app.post('/urls', (req, res) => {
     } else {
       req.linkError = undefined;
       const date = JSON.stringify(new Date());
-      const year = date.slice(1,5);
-      const month = Number(date.slice(6,8));
+      const year = date.slice(1, 5);
+      const month = Number(date.slice(6, 8));
       const day = date.slice(9, 11);
       const parsedDate = `${day} ${months[month]} ${year}`;
       urlDatabase[newId] = {
