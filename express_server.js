@@ -128,9 +128,21 @@ users.A10100.password = secondPass;
 //months array for dateCreated property of shortened link
 const months = ['January', 'February', 'March', 'Aprrl', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
+/**************************
+
+          Root
+
+**************************/
+
 app.get('/', (req, res) => {
   res.redirect('/urls');
 });
+
+/**************************
+
+Registration / Login Routes
+
+**************************/
 
 app.get('/register', (req, res) => {
   const id = req.session.user_Id;
@@ -209,6 +221,12 @@ app.post('/logout', (req, res) => {
   res.redirect('/urls');
 });
 
+/**************************
+
+  View Render Routes
+
+**************************/
+
 app.get('/urls', (req, res) => {
   req.linkError = undefined;
   const id = req.session.user_Id;
@@ -235,6 +253,12 @@ app.get('/urls/:id', (req, res) => {
   let templateVars = { shortURL: req.params.id, url, user: users[userId], visits: urlDatabase[req.params.id].visits, linkError };
   res.render('urls_show', templateVars);
 });
+
+/**************************
+
+  Operation Routes
+
+**************************/
 
 app.put('/urls/:id', (req, res) => {
   const userId = req.session.user_Id;
@@ -291,6 +315,26 @@ app.post('/urls', (req, res) => {
   }
 });
 
+app.delete('/urls/:id/delete', (req, res) => {
+  id = req.session.user_Id;
+  const shortURL = req.params.id;
+  // send unauthorized status if page accessed without login
+  if(!id) {
+    res.status(403).send('Unauthorized');
+  } else {
+    if (urlDatabase[shortURL].user === id) {
+      delete urlDatabase[shortURL];
+    }
+    res.redirect('/urls');
+  }
+});
+
+/**************************
+
+  Redirect to URL Route
+
+**************************/
+
 app.get('/u/:shortURL', (req, res) => {
   const {shortURL} = req.params;
   const longURL = urlDatabase[shortURL].long;
@@ -310,19 +354,6 @@ app.get('/u/:shortURL', (req, res) => {
   res.redirect(longURL);
 });
 
-app.delete('/urls/:id/delete', (req, res) => {
-  id = req.session.user_Id;
-  const shortURL = req.params.id;
-  // send unauthorized status if page accessed without login
-  if(!id) {
-    res.status(403).send('Unauthorized');
-  } else {
-    if (urlDatabase[shortURL].user === id) {
-      delete urlDatabase[shortURL];
-    }
-    res.redirect('/urls');
-  }
-});
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);
