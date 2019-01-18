@@ -17,6 +17,7 @@
             <tr><td>LOGIN OR REGISTER TO VIEW URLS</td></tr>
           <% } %>  
           <% for (key in urls) { %>
+            <tr><td> ----------- </td></tr> 
             <tr> 
               <td><%= keyArray[keyArrayIndex] %></td>
               <td><strong>&emsp; &#8680 &emsp;</strong></td>
@@ -35,6 +36,8 @@
                 </form>
                 
               </td>
+            </tr> 
+            
               <% }; %>  
               <% keyArrayIndex++ %>
             <% for(let i = 0; i < urls[key].visits.length; i++) { %>
@@ -45,6 +48,7 @@
               </tr>
             <% } %>
           <% }; %>
+          <tr><td> ----------- </td></tr> 
           <tr>
             <td>
               <form method="GET" action= "<%= `urls/new` %>">
@@ -54,5 +58,6 @@
           </tr>  
         </tbody>
   </table>
+  
 </body>
 </html>
