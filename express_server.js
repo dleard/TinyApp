@@ -102,7 +102,7 @@ app.get('/', (req, res) => {
 
 app.get('/register', (req, res) => {
   const id = req.session.user_Id;
-  let templateVars = {user: users[id], duplicateUserError: req.duplicateUserError};
+  let templateVars = {user: users[id], registerError: req.registerError};
   res.render('register', templateVars);
 });
 
@@ -115,20 +115,26 @@ app.post('/register', (req, res) => {
       existsFlag = 1;
     }
   }
-  if (existsFlag) {
-    req.duplicateUserError = 'user email already exists';
-    let templateVars = {user: users[id], duplicateUserError: req.duplicateUserError};
+  if (!validateEmail(email)) {
+    req.registerError = 'invalid email format';
+    templateVars = {user: users[id], registerError: req.registerError};
     res.render('register', templateVars);
   } else {
-    req.duplicateUserError = undefined;
-    users[id] = {};
-    users[id].id = id;
-    users[id].email = email;
-    users[id].password = bcrypt.hashSync(pass, 10);
-    
-    req.session.user_Id = id;
-    res.redirect('/urls');
-  }
+    if (existsFlag) {
+      req.registerError = 'user email already exists';
+      let templateVars = {user: users[id], registerError: req.registerError};
+      res.render('register', templateVars);
+    } else {
+      req.registerError = undefined;
+      users[id] = {};
+      users[id].id = id;
+      users[id].email = email;
+      users[id].password = bcrypt.hashSync(pass, 10);
+      
+      req.session.user_Id = id;
+      res.redirect('/urls');
+    }
+  }  
 });
 
 app.get('/login', (req, res) => {
