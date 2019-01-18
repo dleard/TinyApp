@@ -278,7 +278,9 @@ app.post('/urls', (req, res) => {
         user: id,
         long: longURL,
         dateCreated: parsedDate,
-        numClicks: 0
+        numClicks: 0,
+        uniqueClicks: 0,
+        visits: []
       };
       res.redirect('/urls');
     }
