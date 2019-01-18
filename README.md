@@ -23,6 +23,7 @@ TinyApp is a full stack web application built with Node and Express that allows 
 
 This app comes with some dummy values entered into the URLs database and some dummy users.
 and 2 dummy users:
+
 User 1:
 - email: first@gmail.com
 - password: first
