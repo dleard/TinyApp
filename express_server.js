@@ -143,7 +143,7 @@ app.get('/urls', (req, res) => {
 
 app.get('/urls/new', (req, res) => {
   const id = req.session.user_Id;
-  const linkError = req.session.linkError;
+  const linkError = req.linkError;
   if ( id === undefined) {
     res.redirect('/login')
   }
@@ -153,9 +153,10 @@ app.get('/urls/new', (req, res) => {
 
 app.get('/urls/:id', (req, res) => {
   let {id} = req.params
+  const linkError = req.linkError
   const userId = req.session.user_Id;
   const url = urlDatabase[id].long;
-  let templateVars = { shortURL: req.params.id, url, user: users[userId] };
+  let templateVars = { shortURL: req.params.id, url, user: users[userId], linkError };
   res.render('urls_show', templateVars);
 });
 
@@ -163,10 +164,19 @@ app.post('/urls/:id', (req, res) => {
   const id = req.session.user_Id;
   const shortURL = req.params.id;
   const newLongURL = req.body.longURL;
-  if (urlDatabase[shortURL].user === id) {
-    urlDatabase[shortURL].long = newLongURL;
-  };
-  res.redirect('/urls');
+  const url = urlDatabase[shortURL].long;
+  if (!linkChecker(newLongURL)) {
+    req.linkError = 'invalid link did you forget http:// ?';
+    templateVars = {shortURL, user: users[id], url, linkError: req.linkError};
+    res.render('urls_show', templateVars)
+  } else {
+    req.linkError = undefined;
+  
+    if (urlDatabase[shortURL].user === id) {
+      urlDatabase[shortURL].long = newLongURL;
+    };
+    res.redirect('/urls');
+  }
 });
 
 app.post('/urls', (req, res) => {
@@ -179,12 +189,13 @@ app.post('/urls', (req, res) => {
     res.render('urls_new', templateVars)
   } else {
     req.linkError = undefined;
+  
+    urlDatabase[newId] = {
+      user: id,
+      long: longURL,
+    }  
+    res.redirect('/urls');
   }
-  urlDatabase[newId] = {
-    user: id,
-    long: longURL,
-  }  
-  res.redirect('/urls');
 });
 
 app.get('/u/:shortURL', (req, res) => {
