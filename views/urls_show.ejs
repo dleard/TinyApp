@@ -10,7 +10,7 @@
   </header>  
   
   <h1><%= `ShortURL:  ${shortURL}`%></h1>
-  <form action="<%= `/urls/${shortURL}` %>" method='POST'>
+  <form action="<%= `/urls/${shortURL}?_method=PUT` %>" method='POST'>
     <input id='longURL' type='text' name='longURL' placeholder="<%= url %>" style='width: 300px'>
     <input type='submit' value='Update'>
   </form>

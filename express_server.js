@@ -2,9 +2,11 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
+const methodOverride = require('method-override');
 const app = express();
 const PORT = 8080;
 
+app.use(methodOverride('_method'));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieSession({
   name: 'session',
@@ -215,7 +217,7 @@ app.get('/urls/:id', (req, res) => {
   res.render('urls_show', templateVars);
 });
 
-app.post('/urls/:id', (req, res) => {
+app.put('/urls/:id', (req, res) => {
   const id = req.session.user_Id;
   const shortURL = req.params.id;
   const newLongURL = req.body.longURL;
@@ -279,7 +281,7 @@ app.get('/u/:shortURL', (req, res) => {
   res.redirect(longURL);
 });
 
-app.post('/urls/:id/delete', (req, res) => {
+app.delete('/urls/:id/delete', (req, res) => {
   id = req.session.user_Id;
   const shortURL = req.params.id;
   // send unauthorized status if page accessed without login
