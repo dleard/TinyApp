@@ -64,6 +64,14 @@ const linkChecker = (link) => {
   return true;
 };
 
+const validateEmail = (email) => {
+  const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  if(!emailRegex.test(email)) {
+    return false;
+  }
+  return true;
+}
+
 const firstPass = bcrypt.hashSync('first', 10);
 const secondPass = bcrypt.hashSync('second', 10);
 
@@ -107,7 +115,7 @@ app.post('/register', (req, res) => {
 
 app.get('/login', (req, res) => {
   const id = req.session.user_Id;
-  let templateVars = {user: users[id]};
+  let templateVars = {user: users[id], emailError: req.emailError};
   res.render('login', templateVars);
 
 });
@@ -115,17 +123,25 @@ app.get('/login', (req, res) => {
 app.post('/login', (req, res) => {
   const { email, pass} = req.body;
   let id;
-  for (key in users) {
-    if (users[key].email === email && bcrypt.compareSync(pass, users[key].password)) {
-      id = users[key].id;
+  
+  if (!validateEmail(email)) {
+      req.emailError = 'invalid email format';
+      templateVars = {user: users[id], emailError: req.emailError};
+      res.render('login', templateVars)
+  } else {
+
+    for (key in users) {
+      if (users[key].email === email && bcrypt.compareSync(pass, users[key].password)) {
+        id = users[key].id;
+      }
     }
+    if (id === undefined) {
+      res.status(403);
+      res.send('Invalid Login');
+    }
+    req.session.user_Id = id;
+    res.redirect('/urls');
   }
-  if (id === undefined) {
-    res.status(403);
-    res.send('Invalid Login');
-  }
-  req.session.user_Id = id;
-  res.redirect('/urls');
 });
 
 app.post('/logout', (req, res) => {

@@ -26,5 +26,8 @@
       <br>
       <input type='submit' value='Submit'>
     </form>
+    <% if (emailError !== undefined) { %>
+      <p style = "color:red;"><%= emailError %></p>
+    <% } %>
   </body>
-</html>  
+</html>
