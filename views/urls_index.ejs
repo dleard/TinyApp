@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang='en'>
 <head>
-<title>TinyApp</title>
+  <title>TinyApp</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" 
+  integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 </head>
 
 <body>
@@ -11,7 +13,11 @@
   
   <% let keyArray = Object.keys(urls) %>
   <% let keyArrayIndex = 0; %>
-  <table>
+  <div class = "container">
+  <div class = "row">
+  <div class="col-md-12">
+  <h2 class = 'text-center'>Your Tiny App Links</h2>
+  <table class = 'table table-bordered'>
         <tbody>
           <% if (user === undefined) { %>
             <tr><td>LOGIN OR REGISTER TO VIEW URLS</td></tr>
@@ -28,11 +34,11 @@
               <% if (user !== undefined && user.id === urls[key].user) { %>
               <td>
                 <form method="GET" action= "<%= `urls/${keyArray[keyArrayIndex]}` %>">
-                  <input type="submit" value="edit">
+                  <input class = "btn btn-info" type="submit" value="edit">
                 </form>
               <td>
                 <form method="POST" action= "<%= `urls/${keyArray[keyArrayIndex]}/delete?_method=DELETE` %>">
-                  <input type="submit" value="delete">
+                  <input class = "btn btn-danger" type="submit" value="delete">
                 </form>
                 
               </td>
@@ -41,15 +47,14 @@
               <% }; %>  
               <% keyArrayIndex++ %>
           <% }; %>
-          <tr>
-            <td>
-              <form method="GET" action= "<%= `urls/new` %>">
-              <input type="submit" value="NEW">
-              </form>
-            </td>
-          </tr>  
+          
         </tbody>
   </table>
-  
+  <form method="GET" action= "<%= `urls/new` %>">
+    <input class="btn btn-primary center-block" type="submit" value="NEW">
+  </form>
+  </div>  
+  </div>  
+  </div>  
 </body>
 </html>

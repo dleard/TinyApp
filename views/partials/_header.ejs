@@ -1,17 +1,17 @@
 <!-- views/partials/header.ejs -->
 
-<h1>Tiny APP</h1>
+<h1 class="text-center">Tiny APP</h1>
 <% if (user !== undefined) { %>
     <form action="/logout" method="POST">
-      <input type="submit" value="Log out">
+      <input class="btn btn-warning center-block" type="submit" value="Log out">
     </form>      
-    <p><%=`Hello, ${user.email}!` %> </p>
+    <p class="text-center"><%=`Hello, ${user.email}!` %> </p>
 <% } %>  
 <% if(user === undefined) { %>
     <form action="/login" method='GET'>
-      <input type="submit" value="Log in">
+      <input class = "btn btn-success" type="submit" value="Log in">
     </form>
     <form action="/register" method='GET'>
-      <input type="submit" value="Register">
+      <input class = "btn btn-success" type="submit" value="Register">
     </form>
 <% } %>
