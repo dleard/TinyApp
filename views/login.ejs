@@ -3,34 +3,30 @@
   <head>
     <title>TinyApp</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" 
-  integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <style>
-      label.register{
-        display: table-cell;
-      }
-      input.register{
-        width: 300px;
-        display: table-cell;
-      }
-    </style>
-  </header>
+    integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    
+  </head>
   <body style='font-size:20px; padding:50px;'>
     <header>
       <% include partials/_header %>
     </header>
+    <div class="text-center">
+    <h3><strong>Login</strong></h3>
     <br>
-    <h3>Login</h3>
     <form action='/login' method='POST'>
-      <label class='register' for='email'>Email:</label>
-      <input class='register' id='email' type='text' name='email' placeholder='you@example.com'>
+      <label for='email'>Email:&emsp;&emsp;&emsp;</label>
+      <input id='email' type='text' name='email' placeholder='you@example.com'>
       <br>
-      <label class='register' for='pass'>Password:</label>
-      <input class='register' id='pass' type='text' name='pass' placeholder='password'>
+      <label for='pass'>Password:&emsp;</label>
+      <input id='pass' type='text' name='pass' placeholder='password'>
       <br>
-      <input type='submit' value='Submit'>
+      <br>
+      <input class="btn btn-primary" type='submit' value='Submit'>
     </form>
+    <br>
     <% if (emailError !== undefined) { %>
-      <p style = "color:red;"><%= emailError %></p>
+      <p class="text-center" style = "color:red;"><%= emailError %></p>
     <% } %>
+    </div>
   </body>
 </html>

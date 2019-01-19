@@ -18,19 +18,22 @@
     <header>
       <% include partials/_header %>
     </header>
+    <h3 class="text-center"><strong>Create an account</strong></h3>
     <br>
-    <h3>Create an account</h3>
+    <div class="text-center center-block">
     <form action='/register' method='POST'>
-      <label class='register' for='email'>Email:</label>
-      <input class='register' id='email' type='text' name='email' placeholder='you@example.com'>
+      <label for='email'>Email:&emsp;&emsp;</label>
+      <input id='email' type='text' name='email' placeholder='you@example.com'>
       <br>
-      <label class='register' for='pass'>Password:</label>
-      <input class='register' id='pass' type='text' name='pass' placeholder='password'>
+      <label for='pass'>Password:</label>
+      <input id='pass' type='text' name='pass' placeholder='password'>
       <br>
-      <input type='submit' value='Submit'>
+      <br>
+      <input class="btn btn-primary" type='submit' value='Submit'>
     </form>
     <% if (registerError !== undefined) { %>
       <p style = "color:red;"><%= registerError %></p>
     <% } %>
+    </div>
   </body>
 </html>
