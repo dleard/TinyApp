@@ -16,7 +16,7 @@ app.use(cookieSession({
 }));
 app.set('view engine', 'ejs');
 
-//hardcoded dummy database
+// hardcoded dummy database
 const urlDatabase = {
   
   'b2xVn2': {
@@ -26,8 +26,8 @@ const urlDatabase = {
     numClicks: 4,
     uniqueClicks: 2,
     uniqueUsers: ['B10000', 'D1111'],
-    visits: [{uniqueID: 'B10000', timestamp: 'January 15 2018'}, {uniqueID: 'B10000', timestamp: 'January 23 2018'}, 
-    {uniqueID: 'D11111', timestamp: 'June 1 2018'}, {uniqueID: 'D11111', timestamp: 'July 5 2018'}]
+    visits: [{uniqueID: 'B10000', timestamp: 'January 15 2018'}, {uniqueID: 'B10000', timestamp: 'January 23 2018'},
+      {uniqueID: 'D11111', timestamp: 'June 1 2018'}, {uniqueID: 'D11111', timestamp: 'July 5 2018'}]
   },
   '9sm5xK': {
     user: 'A10000',
@@ -49,7 +49,7 @@ const urlDatabase = {
   }
   
 };
-//generate strings for ID's
+// generate strings for ID's
 const generateRandomString  = () => {
   let randomString = '';
   for (let i = 0; i < 6; i++) {
@@ -65,7 +65,7 @@ const generateRandomString  = () => {
   return randomString;
 };
 
-//get all URLS attributed to a single user
+// get all URLS attributed to a single user
 const urlsForUser = (id) => {
   userURLs = {};
   for (key in urlDatabase) {
@@ -76,7 +76,7 @@ const urlsForUser = (id) => {
   return userURLs;
 };
 
-//validate html format for long URLs
+// validate html format for long URLs
 const linkChecker = (link) => {
   const httpRegex = /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/;
   if (!httpRegex.test(link)) {
@@ -85,7 +85,7 @@ const linkChecker = (link) => {
   return true;
 };
 
-//validate email format for login / registration
+// validate email format for login / registration
 const validateEmail = (email) => {
   const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   if(!emailRegex.test(email)) {
@@ -94,20 +94,23 @@ const validateEmail = (email) => {
   return true;
 };
 
-//get date and parse to readable format
+// months array for dateCreated property of shortened link
+const months = ['January', 'February', 'March', 'Aprrl', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+// get date and parse to readable format
 const getDate = () => {
   const date = JSON.stringify(new Date());
   const year = date.slice(1, 5);
   const month = Number(date.slice(6, 8));
   const day = date.slice(9, 11);
   return `${months[month]} ${day} ${year}`;
-}
+};
 
-//passwords for hardcoded dummy users
+// passwords for hardcoded dummy users
 const firstPass = bcrypt.hashSync('first', 10);
 const secondPass = bcrypt.hashSync('second', 10);
 
-//hardcoded dummy users
+// hardcoded dummy users
 const users = {
   A10000: {
     id: 'A10000',
@@ -121,12 +124,9 @@ const users = {
   }
 };
 
-//set passwords for dummy users
+// set passwords for dummy users
 users.A10000.password = firstPass;
 users.A10100.password = secondPass;
-
-//months array for dateCreated property of shortened link
-const months = ['January', 'February', 'March', 'Aprrl', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 /**************************
 
@@ -153,7 +153,7 @@ app.get('/register', (req, res) => {
 app.post('/register', (req, res) => {
   const id = generateRandomString();
   const {email, pass} = req.body;
-  //flag set to false for if a user email already exists in the db
+  // flag set to false for if a user email already exists in the db
   let existsFlag = 0;
   for (key in users) {
     if (users[key].email === email) {
@@ -161,13 +161,13 @@ app.post('/register', (req, res) => {
       existsFlag = 1;
     }
   }
-  //send user back to registration page with error message if email is invalid format
+  // send user back to registration page with error message if email is invalid format
   if (!validateEmail(email)) {
     req.registerError = 'invalid email format';
     templateVars = {user: users[id], registerError: req.registerError};
     res.render('register', templateVars);
   } else {
-    //send user back to registration page with error message if user email already exists
+    // send user back to registration page with error message if user email already exists
     if (existsFlag) {
       req.registerError = 'user email already exists';
       let templateVars = {user: users[id], registerError: req.registerError};
@@ -195,7 +195,7 @@ app.get('/login', (req, res) => {
 app.post('/login', (req, res) => {
   const { email, pass} = req.body;
   let id;
-  //send user back to login page with error message if email is invalid format
+  // send user back to login page with error message if email is invalid format
   if (!validateEmail(email)) {
     req.emailError = 'invalid email format';
     templateVars = {user: users[id], emailError: req.emailError};
@@ -343,14 +343,13 @@ app.get('/u/:shortURL', (req, res) => {
   if (req.session.uniqueID === undefined) {
     req.session.uniqueID = uniqueID;
     urlDatabase[shortURL].uniqueUsers.push(req.session.uniqueID);
-    urlDatabase[shortURL].uniqueClicks++
-  } 
-  else if (!urlDatabase[shortURL].uniqueUsers.includes(req.session.uniqueID)) {
+    urlDatabase[shortURL].uniqueClicks++;
+  } else if (!urlDatabase[shortURL].uniqueUsers.includes(req.session.uniqueID)) {
     urlDatabase[shortURL].uniqueClicks++;
     urlDatabase[shortURL].uniqueUsers.push(req.session.uniqueID);
   }
   const timestamp = getDate();
-  urlDatabase[shortURL].visits.push({uniqueID: req.session.uniqueID, timestamp})  
+  urlDatabase[shortURL].visits.push({uniqueID: req.session.uniqueID, timestamp});
   urlDatabase[shortURL].numClicks++;
   res.redirect(longURL);
 });
