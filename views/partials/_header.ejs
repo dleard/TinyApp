@@ -8,10 +8,13 @@
     <p class="text-center"><%=`Hello, ${user.email}!` %> </p>
 <% } %>  
 <% if(user === undefined) { %>
+    <br>
     <form action="/login" method='GET'>
-      <input class = "btn btn-success" type="submit" value="Log in">
+      <input class = "btn btn-success center-block" type="submit" value="Log in">
     </form>
+    <br>
     <form action="/register" method='GET'>
-      <input class = "btn btn-success" type="submit" value="Register">
+      <input class = "btn btn-info center-block" type="submit" value="Register">
     </form>
+    <br>
 <% } %>

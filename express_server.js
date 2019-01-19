@@ -240,9 +240,10 @@ app.get('/urls/new', (req, res) => {
   const linkError = req.linkError;
   if ( id === undefined) {
     res.redirect('/login');
+  } else {
+    let templateVars = { user: users[id], linkError };
+    res.render('urls_new', templateVars);
   }
-  let templateVars = { user: users[id], linkError };
-  res.render('urls_new', templateVars);
 });
 
 app.get('/urls/:id', (req, res) => {

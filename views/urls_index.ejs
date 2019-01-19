@@ -17,10 +17,11 @@
   <div class = "row">
   <div class="col-md-12">
   <h2 class = 'text-center'>Your Tiny App Links</h2>
+  <br>
   <table class = 'table table-bordered'>
         <tbody>
           <% if (user === undefined) { %>
-            <tr><td>LOGIN OR REGISTER TO VIEW URLS</td></tr>
+            <tr><td class = "text-center">LOGIN OR REGISTER TO VIEW URLS</td></tr>
           <% } %>  
           <% for (key in urls) { %>
             

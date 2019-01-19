@@ -1,21 +1,28 @@
 <!DOCTYPE html>
 <html lang='en'>
 <head>
-<title>TinyApp</title>
+  <title>TinyApp</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" 
+  integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 </head>
 
 <body>
   <header>
     <% include ./partials/_header %>
   </header>  
-  
-  <h1><%= `ShortURL:  ${shortURL}`%></h1>
+  <div class="container">
+  <h1 class="text-center"><%= `ShortURL:  ${shortURL}`%></h1>
   <form action="<%= `/urls/${shortURL}?_method=PUT` %>" method='POST'>
-    <input id='longURL' type='text' name='longURL' placeholder="<%= url %>" style='width: 300px'>
-    <input type='submit' value='Update'>
+    <input class="center-block" id='longURL' type='text' name='longURL' placeholder="<%= url %>" style='width: 300px'>
+    <br>
+    <input class=" btn btn-info center-block"type='submit' value='Update'>
   </form>
-  <p>-----------------</p>
-  <table>
+  <br>
+  <% if (linkError !== undefined) { %>
+      <p class = "text-center" style = "color:red;"><%= linkError %></p>
+  <% } %>
+  <br>
+  <table class="table table-bordered">
     <tbody>
       <% for(let i = 0; i < visits.length; i++) { %>
         <tr>
@@ -26,9 +33,8 @@
       <% } %>
     </tbody>
   </table>    
-  <% if (linkError !== undefined) { %>
-      <p style = "color:red;"><%= linkError %></p>
-  <% } %>
+  
+  </div>
 
 </body>
 </html>
